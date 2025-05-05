@@ -40,3 +40,12 @@ A full-stack machine learning application that predicts employee salaries using 
 ├── requirements.txt        # Dependencies
 └── README.md               # Project description
 ```
+
+Team Member:
+* Mahmoud_248123
+
+* Bassel_286633
+
+* kasem_250393
+
+* hussam_244087
