@@ -1,16 +1,14 @@
-# 💼 Salary Prediction App
-
-A full-stack machine learning application that predicts employee salaries using both **regression** and **classification** models.
-
----
+# 💼 Loan Approval Prediction App
+A full-stack machine learning application that helps banks approve or reject individual loan requests using predictive modeling.
 
 ## 🚀 Features
+Predict loan approval status using a trained classification model
 
-- Predict salary as a numeric value (regression) or Classify salary into ranges such as Low / Mid / High (classification)
-- User-friendly web interface for input and results
-- Fast and scalable API using FastAPI
+Add or remove loan requests and instantly see prediction updates
 
----
+Visualize Exploratory Data Analysis (EDA) insights across the dataset
+
+Fast and scalable backend API built with FastAPI
 
 ## 🧠 Tech Stack
 
