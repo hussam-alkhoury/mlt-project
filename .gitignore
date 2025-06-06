@@ -1,0 +1,58 @@
+# Virtual Environment
+venv/
+.venv/
+env/
+myenv/
+*/env/
+*/.venv/
+*/venv/
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.pyd
+*.egg
+
+# Python distribution
+*.egg-info/
+dist/
+build/
+wheelhouse/
+*.whl
+*.egg
+
+# Log and temp files
+*.log
+*.tmp
+*.swp
+
+# Environment files
+.env
+*.env
+
+# IDE files
+.idea/
+*.vscode/
+*.spyproject
+*.spyderproject
+
+# Other files
+*.manifest
+*.spec
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Sphinx documentation
+docs/_build/
+
+# PDM
+.pdm.toml
+.pyre/
+.pytype/
+
+# Coverage reports
+coverage.xml
+*.coverage
+.pytest_cache/
