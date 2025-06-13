@@ -1,0 +1,41 @@
+body {
+  background-color: #f2f4f7;
+  font-family: 'Inter', sans-serif;
+}
+
+.navbar-brand {
+  font-family: 'Pacifico', cursive;
+  font-size: 1.7rem;
+  color: #fff !important;
+  text-shadow: 0 0 5px #9cdb89, 0 0 10px #9cdb89;
+}
+
+main {
+  max-width: 900px;
+  margin: auto;
+}
+
+form {
+  background-color: white;
+  padding: 2rem;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+h1, h2 {
+  color: #4a6c44;
+}
+
+.btn-primary {
+  background-color: #5c8051;
+  border: none;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.btn-primary:hover {
+  background-color: #4a6c44;
+}
+
+select, input {
+  border-radius: 5px;
+}
