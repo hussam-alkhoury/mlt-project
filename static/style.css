@@ -26,8 +26,13 @@ h1, h2 {
   color: #4a6c44;
 }
 
+.bg-primary {
+    --bs-bg-opacity: 1;
+    background-color: #5c8051 !important;
+}
+
 .btn-primary {
-  background-color: #5c8051;
+  background-color: #5c8051 !important;
   border: none;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
