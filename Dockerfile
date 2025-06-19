@@ -13,8 +13,8 @@ COPY requirements.txt .
 RUN pip install --upgrade pip && pip install -r requirements.txt
 
 # Copy the application code
-COPY model .
-COPY static .
+COPY model ./model
+COPY static ./static
 COPY main.py .
 
 # Expose port

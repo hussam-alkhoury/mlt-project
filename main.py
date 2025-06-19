@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 
 import joblib
 import numpy as np
@@ -8,6 +9,13 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
+
+# Get the current script's directory
+current_dir = Path(__file__).parent
+
+# Join paths in a safe, OS-independent way
+static_dir = current_dir / "static"
+print(static_dir)
 
 app = FastAPI(title="Loan Approval API")
 
@@ -19,12 +27,12 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-app.mount("/static", StaticFiles(directory="static"), name="static")
+app.mount("/static", StaticFiles(directory=static_dir), name="static")
 
 # Load model and scaler
-model = joblib.load("model/loan_approval_model.pkl")
-scaler = joblib.load("model/scaler.pkl")
-feature_columns = joblib.load("model/model_features.pkl")
+model = joblib.load(f"{current_dir}/model/loan_approval_model.pkl")
+scaler = joblib.load(f"{current_dir}/model/scaler.pkl")
+feature_columns = joblib.load(f"{current_dir}/model/model_features.pkl")
 
 
 class LoanApplication(BaseModel):
