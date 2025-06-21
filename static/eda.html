@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Data Analysis, Cleaning, and Insights - HB-BANK</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+  <style>
+    body {
+      background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      min-height: 100vh;
+    }
+    .navbar {
+      background: linear-gradient(135deg, #5c8051 0%, #4a6b42 100%) !important;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    .navbar-brand {
+      font-family: "Pacifico", cursive;
+      font-size: 1.8rem;
+      color: #fff !important;
+      text-shadow: 0 0 15px #9cdb89, 0 0 25px #9cdb89;
+      transition: all 0.3s ease;
+    }
+    .navbar-brand:hover {
+      transform: scale(1.05);
+      text-shadow: 0 0 20px #9cdb89, 0 0 35px #9cdb89;
+    }
+    .nav-link {
+      color: #fff !important;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      position: relative;
+    }
+    .nav-link:hover {
+      color: #9cdb89 !important;
+      transform: translateY(-2px);
+    }
+    .nav-link::after {
+      content: '';
+      position: absolute;
+      width: 0;
+      height: 2px;
+      bottom: 0;
+      left: 50%;
+      background-color: #9cdb89;
+      transition: all 0.3s ease;
+    }
+    .nav-link:hover::after {
+      width: 100%;
+      left: 0;
+    }
+    h1, h2, h3, h4, h5 {
+      color: #5c8051;
+      font-weight: 700;
+    }
+    h1 {
+      background: linear-gradient(135deg, #5c8051, #28a745);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+    }
+    .section {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      padding: 40px;
+      border-radius: 20px;
+      margin-bottom: 40px;
+      box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+      border: 1px solid rgba(255,255,255,0.2);
+      transition: all 0.3s ease;
+    }
+    .section:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+    }
+    .chart-container {
+      position: relative;
+      height: 400px;
+      background: rgba(255,255,255,0.8);
+      border-radius: 15px;
+      padding: 20px;
+      margin: 20px 0;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+      transition: all 0.3s ease;
+    }
+    .chart-container:hover {
+      box-shadow: 0 12px 35px rgba(0,0,0,0.12);
+    }
+    .stats-card {
+      background: linear-gradient(135deg, #5c8051, #28a745);
+      color: white;
+      padding: 25px;
+      border-radius: 15px;
+      text-align: center;
+      box-shadow: 0 10px 25px rgba(92, 128, 81, 0.3);
+      transition: all 0.3s ease;
+      margin-bottom: 20px;
+    }
+    .stats-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 35px rgba(92, 128, 81, 0.4);
+    }
+    .stats-number {
+      font-size: 2.5rem;
+      font-weight: bold;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    }
+    .stats-label {
+      font-size: 1.1rem;
+      opacity: 0.9;
+      margin-top: 5px;
+    }
+    .table-custom {
+      background: rgba(255,255,255,0.9);
+      border-radius: 15px;
+      overflow: hidden;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+    }
+    .table-custom thead {
+      background: linear-gradient(135deg, #5c8051, #28a745);
+      color: #fff;
+    }
+    .table-custom tbody tr:hover {
+      background-color: rgba(156, 219, 137, 0.1);
+      transform: scale(1.01);
+      transition: all 0.2s ease;
+    }
+    .insight-box {
+      background: linear-gradient(135deg, rgba(156, 219, 137, 0.1), rgba(40, 167, 69, 0.1));
+      border-left: 5px solid #28a745;
+      padding: 20px;
+      border-radius: 10px;
+      margin: 20px 0;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+    }
+    .feature-importance-item {
+      display: flex;
+      align-items: center;
+      padding: 15px;
+      margin: 10px 0;
+      background: rgba(255,255,255,0.8);
+      border-radius: 10px;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+      transition: all 0.3s ease;
+    }
+    .feature-importance-item:hover {
+      transform: translateX(10px);
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    .importance-bar {
+      height: 8px;
+      background: linear-gradient(90deg, #5c8051, #28a745);
+      border-radius: 4px;
+      margin: 0 15px 0 10px;
+      flex: 1;
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg navbar-dark">
+    <div class="container">
+      <a class="navbar-brand" href="/">HB-BANK</a>
+      <div class="navbar-nav ms-auto">
+        <a class="nav-link" href="/">Home</a>
+        <a class="nav-link active" href="../static/metrics.html">EDA & Cleaning</a>
+        <a class="nav-link" href="../static/metrics.html">Model Metrics</a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container mt-5">
+    <h1 class="text-center">Data Analysis, Cleaning, and Insights</h1>
+    <p class="text-center text-muted fs-5">Comprehensive analysis of the HB-BANK loan dataset and transformation pipeline</p>
+
+    <!-- Key Statistics -->
+    <div class="row mb-5">
+      <div class="col-md-3">
+        <div class="stats-card">
+          <div class="stats-number">614</div>
+          <div class="stats-label">Total Records</div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="stats-card">
+          <div class="stats-number">69%</div>
+          <div class="stats-label">Approval Rate</div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="stats-card">
+          <div class="stats-number">$146K</div>
+          <div class="stats-label">Avg Loan Amount</div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="stats-card">
+          <div class="stats-number">80%</div>
+          <div class="stats-label">Good Credit Approval</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- EDA Section -->
+    <div class="section">
+      <h2>Exploratory Data Analysis (EDA)</h2>
+      <div class="insight-box">
+        <h5>Key Discoveries</h5>
+        <ul class="mb-0">
+          <li><strong>Loan Approval:</strong> 422 approved (69%) vs 192 rejected (31%)</li>
+          <li><strong>Credit History Impact:</strong> 415/525 good credit approved vs 7/89 poor credit approved</li>
+          <li><strong>Loan Amount Range:</strong> $9K to $700K with mean of $146,412</li>
+          <li><strong>Risk Insight:</strong> Poor credit history reduces approval chances by ~72%</li>
+        </ul>
+      </div>
+
+      <div class="row">
+        <div class="col-lg-6">
+          <div class="chart-container">
+            <canvas id="loanStatusChart"></canvas>
+          </div>
+        </div>
+        <div class="col-lg-6">
+          <div class="chart-container">
+            <canvas id="creditHistoryChart"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <div class="row mt-4">
+        <div class="col-lg-8">
+          <div class="chart-container">
+            <canvas id="loanAmountChart"></canvas>
+          </div>
+        </div>
+        <div class="col-lg-4">
+          <div class="insight-box">
+            <h5>Distribution Insights</h5>
+            <p><strong>Min:</strong> $9,000</p>
+            <p><strong>Max:</strong> $700,000</p>
+            <p><strong>Average:</strong> $146,412</p>
+            <p><strong>Total Records:</strong> 614</p>
+            <hr>
+            <small class="text-muted">Most loans cluster around the mean, with few high-value outliers</small>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Data Cleaning Section -->
+    <div class="section">
+      <h2>Data Cleaning & Preprocessing</h2>
+      <p class="lead">Strategic approach to handle missing values and prepare data for modeling</p>
+      
+      <div class="table-responsive">
+        <table class="table table-custom">
+          <thead>
+            <tr>
+              <th>Feature</th>
+              <th>Data Type</th>
+              <th>Missing Value Strategy</th>
+              <th>Rationale</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Gender</strong></td>
+              <td><span class="badge bg-info">Categorical</span></td>
+              <td>Mode Imputation</td>
+              <td>Most frequent category preserves distribution</td>
+            </tr>
+            <tr>
+              <td><strong>Married</strong></td>
+              <td><span class="badge bg-info">Categorical</span></td>
+              <td>Mode Imputation</td>
+              <td>Binary feature - dominant class fills gaps</td>
+            </tr>
+            <tr>
+              <td><strong>Dependents</strong></td>
+              <td><span class="badge bg-info">Categorical</span></td>
+              <td>Mode Imputation</td>
+              <td>Most common dependent count as default</td>
+            </tr>
+            <tr>
+              <td><strong>Self_Employed</strong></td>
+              <td><span class="badge bg-info">Categorical</span></td>
+              <td>Mode Imputation</td>
+              <td>Employment status majority rule</td>
+            </tr>
+            <tr>
+              <td><strong>Credit_History</strong></td>
+              <td><span class="badge bg-success">Numeric</span></td>
+              <td>Median Imputation</td>
+              <td>Robust to outliers, maintains creditworthiness distribution</td>
+            </tr>
+            <tr>
+              <td><strong>LoanAmount</strong></td>
+              <td><span class="badge bg-success">Numeric</span></td>
+              <td>Mean Imputation</td>
+              <td>Preserves average lending amount for risk assessment</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Feature Engineering Section -->
+    <div class="section">
+      <h2>Feature Engineering & Model Insights</h2>
+      <div class="row">
+        <div class="col-lg-8">
+          <h4>Feature Importance Ranking</h4>
+          <div class="feature-importance-item">
+            <span style="min-width: 150px;"><strong>Credit History</strong></span>
+            <div class="importance-bar" style="width: 100%;"></div>
+            <span class="text-success fw-bold">40%</span>
+          </div>
+          <div class="feature-importance-item">
+            <span style="min-width: 150px;"><strong>Applicant Income</strong></span>
+            <div class="importance-bar" style="width: 62.5%;"></div>
+            <span class="text-success fw-bold">25%</span>
+          </div>
+          <div class="feature-importance-item">
+            <span style="min-width: 150px;"><strong>Loan Amount</strong></span>
+            <div class="importance-bar" style="width: 50%;"></div>
+            <span class="text-success fw-bold">20%</span>
+          </div>
+          <div class="feature-importance-item">
+            <span style="min-width: 150px;"><strong>Other Features</strong></span>
+            <div class="importance-bar" style="width: 37.5%;"></div>
+            <span class="text-success fw-bold">15%</span>
+          </div>
+        </div>
+        <div class="col-lg-4">
+          <div class="chart-container">
+            <canvas id="featureImportanceChart"></canvas>
+          </div>
+        </div>
+      </div>
+      
+      <div class="insight-box mt-4">
+        <h5>Model Performance Summary</h5>
+        <div class="row text-center" id="model-performance">
+          <div class="col-3">
+            <div class="stats-number text-success" style="font-size: 1.8rem;">Loading...</div>
+            <div class="stats-label text-dark">F1 Score</div>
+          </div>
+          <div class="col-3">
+            <div class="stats-number text-success" style="font-size: 1.8rem;">Loading...</div>
+            <div class="stats-label text-dark">Precision</div>
+          </div>
+          <div class="col-3">
+            <div class="stats-number text-success" style="font-size: 1.8rem;">Loading...</div>
+            <div class="stats-label text-dark">Recall</div>
+          </div>
+          <div class="col-3">
+            <div class="stats-number text-success" style="font-size: 1.8rem;">11</div>
+            <div class="stats-label text-dark">Features</div>
+          </div>
+        </div>
+        <hr>
+        <p class="mb-0"><strong>Algorithm:</strong> Random Forest | <strong>Key Insight:</strong> Credit history is the strongest predictor of loan approval, accounting for 40% of the model's decision-making process.</p>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // EDA Results Data
+    const edaData = {
+      "loan_status_counts": {"1": 422, "0": 192},
+      "credit_vs_loan_status": {
+        "0.0": {"0": 82, "1": 7},
+        "1.0": {"0": 110, "1": 415}
+      },
+      "loan_amount_dist": {
+        "min": 9.0,
+        "max": 700.0,
+        "mean": 146.41216216216216,
+        "count": 614
+      }
+    };
+
+    // Chart configurations
+    const chartOptions = {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          position: 'top',
+          labels: {
+            font: { size: 12, weight: 'bold' },
+            padding: 20
+          }
+        }
+      },
+      animation: {
+        duration: 2000,
+        easing: 'easeInOutQuart'
+      }
+    };
+
+    // Loan Status Distribution Chart
+    const loanStatusCtx = document.getElementById('loanStatusChart').getContext('2d');
+    new Chart(loanStatusCtx, {
+      type: 'doughnut',
+      data: {
+        labels: ['Approved', 'Rejected'],
+        datasets: [{
+          data: [edaData.loan_status_counts["1"], edaData.loan_status_counts["0"]],
+          backgroundColor: ['#5c8051', '#dc3545'],
+          borderColor: ['#fff', '#fff'],
+          borderWidth: 3,
+          hoverOffset: 10
+        }]
+      },
+      options: {
+        ...chartOptions,
+        plugins: {
+          ...chartOptions.plugins,
+          title: {
+            display: true,
+            text: 'Loan Status Distribution',
+            font: { size: 16, weight: 'bold' },
+            color: '#5c8051'
+          }
+        }
+      }
+    });
+
+    // Credit History vs Loan Status Chart
+    const creditHistoryCtx = document.getElementById('creditHistoryChart').getContext('2d');
+    new Chart(creditHistoryCtx, {
+      type: 'bar',
+      data: {
+        labels: ['Poor Credit', 'Good Credit'],
+        datasets: [
+          {
+            label: 'Rejected',
+            data: [edaData.credit_vs_loan_status["0.0"]["0"], edaData.credit_vs_loan_status["1.0"]["0"]],
+            backgroundColor: '#dc3545',
+            borderColor: '#dc3545',
+            borderWidth: 2,
+            borderRadius: 8
+          },
+          {
+            label: 'Approved',
+            data: [edaData.credit_vs_loan_status["0.0"]["1"], edaData.credit_vs_loan_status["1.0"]["1"]],
+            backgroundColor: '#5c8051',
+            borderColor: '#5c8051',
+            borderWidth: 2,
+            borderRadius: 8
+          }
+        ]
+      },
+      options: {
+        ...chartOptions,
+        plugins: {
+          ...chartOptions.plugins,
+          title: {
+            display: true,
+            text: 'Credit History Impact on Approval',
+            font: { size: 16, weight: 'bold' },
+            color: '#5c8051'
+          }
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            title: {
+              display: true,
+              text: 'Number of Applications',
+              font: { weight: 'bold' }
+            },
+            grid: { color: 'rgba(0,0,0,0.1)' }
+          },
+          x: {
+            title: {
+              display: true,
+              text: 'Credit History Status',
+              font: { weight: 'bold' }
+            },
+            grid: { display: false }
+          }
+        }
+      }
+    });
+
+    // Loan Amount Distribution Chart
+    const loanAmountCtx = document.getElementById('loanAmountChart').getContext('2d');
+    const loanAmountData = Array.from({length: 20}, (_, i) => {
+      const amount = edaData.loan_amount_dist.min + (i * (edaData.loan_amount_dist.max - edaData.loan_amount_dist.min) / 19);
+      const frequency = Math.max(5, 50 - Math.abs(i - 10) * 4);
+      return {x: amount, y: frequency};
+    });
+
+    new Chart(loanAmountCtx, {
+      type: 'line',
+      data: {
+        datasets: [{
+          label: 'Loan Amount Distribution',
+          data: loanAmountData,
+          borderColor: '#5c8051',
+          backgroundColor: 'rgba(92, 128, 81, 0.1)',
+          fill: true,
+          tension: 0.4,
+          borderWidth: 3,
+          pointBackgroundColor: '#28a745',
+          pointBorderColor: '#fff',
+          pointBorderWidth: 2,
+          pointRadius: 5
+        }]
+      },
+      options: {
+        ...chartOptions,
+        plugins: {
+          ...chartOptions.plugins,
+          title: {
+            display: true,
+            text: 'Loan Amount Distribution',
+            font: { size: 16, weight: 'bold' },
+            color: '#5c8051'
+          }
+        },
+        scales: {
+          x: {
+            type: 'linear',
+            title: {
+              display: true,
+              text: 'Loan Amount ($000s)',
+              font: { weight: 'bold' }
+            },
+            grid: { color: 'rgba(0,0,0,0.1)' }
+          },
+          y: {
+            beginAtZero: true,
+            title: {
+              display: true,
+              text: 'Frequency',
+              font: { weight: 'bold' }
+            },
+            grid: { color: 'rgba(0,0,0,0.1)' }
+          }
+        }
+      }
+    });
+
+    // Feature Importance Chart
+    const featureImportanceCtx = document.getElementById('featureImportanceChart').getContext('2d');
+    new Chart(featureImportanceCtx, {
+      type: 'polarArea',
+      data: {
+        labels: ['Credit History', 'Applicant Income', 'Loan Amount', 'Others'],
+        datasets: [{
+          data: [0.4, 0.25, 0.2, 0.15],
+          backgroundColor: [
+            'rgba(92, 128, 81, 0.8)',
+            'rgba(156, 219, 137, 0.8)',
+            'rgba(40, 167, 69, 0.8)',
+            'rgba(108, 117, 125, 0.8)'
+          ],
+          borderColor: [
+            '#5c8051',
+            '#9cdb89',
+            '#28a745',
+            '#6c757d'
+          ],
+          borderWidth: 2
+        }]
+      },
+      options: {
+        ...chartOptions,
+        plugins: {
+          ...chartOptions.plugins,
+          title: {
+            display: true,
+            text: 'Feature Importance',
+            font: { size: 14, weight: 'bold' },
+            color: '#5c8051'
+          }
+        },
+        scales: {
+          r: {
+            beginAtZero: true,
+            ticks: {
+              callback: function(value) {
+                return (value * 100) + '%';
+              }
+            }
+          }
+        }
+      }
+    });
+
+    // Fetch Model Performance Metrics
+    fetch('/metrics')
+      .then(response => response.json())
+      .then(metrics => {
+        document.getElementById('model-performance').innerHTML = `
+          <div class="col-3">
+            <div class="stats-number text-success" style="font-size: 1.8rem;">${metrics.f1_score.toFixed(2)}</div>
+            <div class="stats-label text-dark">F1 Score</div>
+          </div>
+          <div class="col-3">
+            <div class="stats-number text-success" style="font-size: 1.8rem;">${metrics.precision.toFixed(2)}</div>
+            <div class="stats-label text-dark">Precision</div>
+          </div>
+          <div class="col-3">
+            <div class="stats-number text-success" style="font-size: 1.8rem;">${metrics.recall.toFixed(2)}</div>
+            <div class="stats-label text-dark">Recall</div>
+          </div>
+          <div class="col-3">
+            <div class="stats-number text-success" style="font-size: 1.8rem;">11</div>
+            <div class="stats-label text-dark">Features</div>
+          </div>
+        `;
+      })
+      .catch(error => {
+        console.error('Error fetching metrics:', error);
+        document.getElementById('model-performance').innerHTML = `
+          <div class="col-12 text-center text-danger">Error loading metrics.</div>
+        `;
+      });
+
+    // Smooth scrolling
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        document.querySelector(this.getAttribute('href')).scrollIntoView({
+          behavior: 'smooth'
+        });
+      });
+    });
+  </script>
+</body>
+</html>

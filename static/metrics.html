@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Model Metrics - HB-BANK</title>
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <style>
+        body {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+        }
+        .navbar {
+            background: linear-gradient(135deg, #5c8051 0%, #4a6b42 100%) !important;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .navbar-brand {
+            font-family: "Pacifico", cursive;
+            font-size: 1.8rem;
+            color: #fff !important;
+            text-shadow: 0 0 15px #9cdb89, 0 0 25px #9cdb89;
+            transition: all 0.3s ease;
+        }
+        .navbar-brand:hover {
+            transform: scale(1.05);
+            text-shadow: 0 0 20px #9cdb89, 0 0 35px #9cdb89;
+        }
+        .nav-link {
+            color: #fff !important;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        .nav-link:hover {
+            color: #9cdb89 !important;
+            transform: translateY(-2px);
+        }
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: 0;
+            left: 50%;
+            background-color: #9cdb89;
+            transition: all 0.3s ease;
+        }
+        .nav-link:hover::after {
+            width: 100%;
+            left: 0;
+        }
+        h1, h3, h4 {
+            color: #5c8051;
+            font-weight: 700;
+        }
+        h1 {
+            background: linear-gradient(135deg, #5c8051, #28a745);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+        .section {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 40px;
+            border-radius: 20px;
+            margin-bottom: 40px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            transition: all 0.3s ease;
+        }
+        .section:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+        }
+        .card {
+            background: rgba(255,255,255,0.8);
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 35px rgba(0,0,0,0.12);
+        }
+        .card-header {
+            background: linear-gradient(135deg, #5c8051, #28a745);
+            color: #fff;
+            border-radius: 15px 15px 0 0;
+            padding: 15px 20px;
+        }
+        canvas {
+            max-height: 200px;
+        }
+        .badge {
+            font-size: 1rem;
+            padding: 0.5em 1em;
+            border-radius: 10px;
+        }
+        .bg-success {
+            background-color: #5c8051 !important;
+        }
+        .bg-info {
+            background-color: #9cdb89 !important;
+        }
+        .bg-warning {
+            background-color: #28a745 !important;
+        }
+        .bg-secondary {
+            background-color: #6c757d !important;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand" href="/">HB-BANK</a>
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link" href="/">Home</a>
+                <a class="nav-link" href="/eda-page">EDA & Cleaning</a>
+                <a class="nav-link active" href="/metrics">Model Metrics</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-5">
+        <h1 class="text-center">Model Performance Metrics</h1>
+        <p class="text-center text-muted fs-5">Performance metrics of the Random Forest model for loan approval prediction</p>
+        <div class="section">
+            <div class="row">
+                <div class="col-md-8">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Model Performance Metrics</h3>
+                        </div>
+                        <div class="card-body">
+                            <canvas id="metricsChart" width="400" height="200"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-header">
+                            <h4>Metrics Summary</h4>
+                        </div>
+                        <div class="card-body">
+                            <div id="metrics-list">
+                                <div class="mb-2">
+                                    <strong>Accuracy:</strong> 
+                                    <span class="badge bg-success">Loading...</span>
+                                </div>
+                                <div class="mb-2">
+                                    <strong>Precision:</strong> 
+                                    <span class="badge bg-info">Loading...</span>
+                                </div>
+                                <div class="mb-2">
+                                    <strong>Recall:</strong> 
+                                    <span class="badge bg-warning">Loading...</span>
+                                </div>
+                                <div class="mb-2">
+                                    <strong>F1 Score:</strong> 
+                                    <span class="badge bg-secondary">Loading...</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Fetch metrics from /metrics endpoint
+        fetch('/metrics')
+            .then(response => response.json())
+            .then(metrics => {
+                // Update metrics display
+                document.getElementById('metrics-list').innerHTML = `
+                    <div class="mb-2">
+                        <strong>Accuracy:</strong> 
+                        <span class="badge bg-success">${(metrics.accuracy * 100).toFixed(1)}%</span>
+                    </div>
+                    <div class="mb-2">
+                        <strong>Precision:</strong> 
+                        <span class="badge bg-info">${(metrics.precision * 100).toFixed(1)}%</span>
+                    </div>
+                    <div class="mb-2">
+                        <strong>Recall:</strong> 
+                        <span class="badge bg-warning">${(metrics.recall * 100).toFixed(1)}%</span>
+                    </div>
+                    <div class="mb-2">
+                        <strong>F1 Score:</strong> 
+                        <span class="badge bg-secondary">${(metrics.f1_score * 100).toFixed(1)}%</span>
+                    </div>
+                `;
+
+                // Update chart with fetched data
+                const ctx = document.getElementById('metricsChart').getContext('2d');
+                new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: ["Accuracy", "Precision", "Recall", "F1 Score"],
+                        datasets: [{
+                            label: 'Performance Score',
+                            data: [metrics.accuracy, metrics.precision, metrics.recall, metrics.f1_score],
+                            backgroundColor: ["#5c8051", "#9cdb89", "#28a745", "#6c757d"],
+                            borderColor: ["#5c8051", "#9cdb89", "#28a745", "#6c757d"],
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            title: {
+                                display: true,
+                                text: "Model Performance Metrics",
+                                font: { size: 16, weight: 'bold' },
+                                color: '#5c8051'
+                            },
+                            legend: { display: false }
+                        },
+                        animation: {
+                            duration: 2000,
+                            easing: 'easeInOutQuart'
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                max: 1,
+                                title: {
+                                    display: true,
+                                    text: "Score",
+                                    font: { weight: 'bold' }
+                                },
+                                ticks: {
+                                    callback: function(value) {
+                                        return (value * 100) + '%';
+                                    }
+                                },
+                                grid: { color: 'rgba(0,0,0,0.1)' }
+                            },
+                            x: {
+                                title: {
+                                    display: true,
+                                    text: "Metrics",
+                                    font: { weight: 'bold' }
+                                },
+                                grid: { display: false }
+                            }
+                        }
+                    }
+                });
+            })
+            .catch(error => {
+                console.error('Error fetching metrics:', error);
+                document.getElementById('metrics-list').innerHTML = '<div class="mb-2 text-danger">Error loading metrics.</div>';
+            });
+
+        // Smooth scrolling
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+    </script>
+</body>
+</html>
